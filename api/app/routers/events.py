@@ -2,8 +2,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
+
 from ..dependencies import SessionDep
 from ..models.event import Event
+from ..cli.datagen import generate_data
 
 router = APIRouter()
 
@@ -17,7 +19,7 @@ def create_event(event: Event, session: SessionDep) -> Event:
     session.refresh(event)
 
     return event
-  
+
 # Read Event
 @router.get("/events/", response_model=list[Event], tags=["Event"])
 def read_events(
@@ -67,4 +69,21 @@ def delete_event(event_id: int, session: SessionDep):
 
     session.delete(Event)
     session.commit()
+    return {"ok": True}
+
+
+# Make fake data
+@router.get("/events/fake/", tags=["Fake Data"])
+def generate_fake_events(
+    session: SessionDep,
+    limit: Annotated[int, Query(le=10000)] = 1000,
+):
+    
+    events = generate_data(limit)
+
+    for event in events:
+        session.add(event)
+
+    session.commit()
+
     return {"ok": True}
