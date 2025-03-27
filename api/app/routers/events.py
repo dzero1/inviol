@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
 
 from ..dependencies import SessionDep
-from ..models.event import Event
+from ..models.event import Event, EventUpdate
 from ..cli.datagen import generate_data
 
 router = APIRouter()
@@ -45,29 +45,30 @@ def read_event(event_id: int, session: SessionDep) -> Event:
 
 # Update Event
 @router.put("/events/{event_id}", tags=["Event"])
-def update_event(event_id: int, data: Event, session: SessionDep) -> Event:
-    Event = session.get(Event, event_id)
+def update_event(event_id: int, data: EventUpdate, session: SessionDep) -> Event:
+    event = session.get(Event, event_id)
 
-    if not Event:
+    if not event:
         raise HTTPException(status_code=404, detail="Event not found")
     
     event_data = data.model_dump(exclude_unset=True)
-    Event.sqlmodel_update(event_data)
-    session.add(Event)
-    session.commit()
-    session.refresh(Event)
+    event.sqlmodel_update(event_data)
 
-    return Event
+    session.add(event)
+    session.commit()
+    session.refresh(event)
+
+    return event
 
 # Delete Event
 @router.delete("/events/{event_id}", tags=["Event"])
 def delete_event(event_id: int, session: SessionDep):
-    Event = session.get(Event, event_id)
+    events = session.get(Event, event_id)
 
-    if not Event:
+    if not events:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    session.delete(Event)
+    session.delete(events)
     session.commit()
     return {"ok": True}
 
