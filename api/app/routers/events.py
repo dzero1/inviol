@@ -2,6 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
+from datetime import datetime
+import dateutil.parser as parser
 
 from ..dependencies import SessionDep
 from ..models.event import Event, EventUpdate
@@ -12,6 +14,8 @@ router = APIRouter()
 # Create Event
 @router.post("/events/", tags=["Event"])
 def create_event(event: Event, session: SessionDep) -> Event:
+    
+    event.timestamp = parser.parse(event.timestamp)
 
     # Create an Event
     session.add(event)
@@ -28,7 +32,7 @@ def read_events(
     limit: Annotated[int, Query(le=100)] = 100,
 ) -> list[Event]:
     
-    command = select(Event).offset(offset).limit(limit)
+    command = select(Event).order_by(Event.timestamp.desc()).offset(offset).limit(limit)
     events = session.exec(command).all()
 
     return events

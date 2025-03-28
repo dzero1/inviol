@@ -8,7 +8,7 @@ class Event(SQLModel, table=True):
     id: Optional[int] | None = Field(default=None, primary_key=True)
     device_id: str
     timestamp: datetime = Field(default_factory=lambda: datetime.now())
-    description: Optional[str]  # do we need text datatype here??
+    description: Optional[str]
 
     # Keep any additional metadata
     meta: Optional[Dict] = Field(default_factory=dict, sa_column=Column(JSON))
