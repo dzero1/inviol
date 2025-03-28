@@ -2,6 +2,7 @@ import 'package:app/components/eventForm.dart';
 import 'package:app/components/eventItem.dart';
 import 'package:app/models/event.dart';
 import 'package:app/services/http.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -18,11 +19,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void getEvents() async {
     try {
-
-    final response = await dio.get('/events');
-    events = response.data.map((e) => Event.fromJson(e)).toList();
-    setState(() {});
-    } catch (e) {}
+      final response = await dio.get('/events');
+      events = response.data.map((e) => Event.fromJson(e)).toList();
+      setState(() {});
+    } on DioException catch (e) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.response?.data ?? e.message),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
   }
 
   @override
