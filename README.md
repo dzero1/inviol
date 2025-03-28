@@ -39,6 +39,9 @@ flutter pub install
 flutter run
 ```
 
+you can change the API endpoint through .env file
+
+
 #### Flutter CLI version info
 ```
 Flutter 3.24.3 • channel stable • https://github.com/flutter/flutter.git
