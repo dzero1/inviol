@@ -102,7 +102,7 @@ class _EventCreateFormState extends State<EventCreateForm> {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database.
@@ -119,7 +119,9 @@ class _EventCreateFormState extends State<EventCreateForm> {
                             meta: json.decode(_meta ?? "{}"),
                           );
                           // print(event);
-                          if (event.save()) {
+                          bool save = await event.save();
+                          if (save) {
+                            ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Event saved successfully'),
@@ -128,6 +130,7 @@ class _EventCreateFormState extends State<EventCreateForm> {
                             );
                             Navigator.pop(context, true);
                           } else {
+                            ScaffoldMessenger.of(context).clearSnackBars();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Failed to save event'),
@@ -136,6 +139,7 @@ class _EventCreateFormState extends State<EventCreateForm> {
                             );
                           }
                         } catch (e) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
                           print(e);
 
                           if (e.toString().contains("not valid JSON")) {
