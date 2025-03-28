@@ -14,8 +14,8 @@ class Event(SQLModel, table=True):
     meta: Optional[Dict] = Field(default_factory=dict, sa_column=Column(JSON))
 
     # Needed for Column(JSON)
-    class Config:
-        arbitrary_types_allowed = True
+    # class Config:
+        # arbitrary_types_allowed = True
 
 
 class EventUpdate(SQLModel):

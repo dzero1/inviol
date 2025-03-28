@@ -17,9 +17,12 @@ class _MyHomePageState extends State<MyHomePage> {
   List events = [];
 
   void getEvents() async {
+    try {
+
     final response = await dio.get('/events');
     events = response.data.map((e) => Event.fromJson(e)).toList();
     setState(() {});
+    } catch (e) {}
   }
 
   @override
