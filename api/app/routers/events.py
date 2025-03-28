@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlmodel import select
 from datetime import datetime
 import dateutil.parser as parser
+import json
 
 from ..dependencies import SessionDep
 from ..models.event import Event, EventUpdate
@@ -14,8 +15,16 @@ router = APIRouter()
 # Create Event
 @router.post("/events/", tags=["Event"])
 def create_event(event: Event, session: SessionDep) -> Event:
-    
-    event.timestamp = parser.parse(event.timestamp)
+
+    try:
+        json.loads(event.meta)
+    except ValueError:
+        raise HTTPException(400, "Invalid meta data format")
+
+    try:
+        event.timestamp = parser.parse(event.timestamp)
+    except ValueError:
+        raise HTTPException(400, "Invalid date time format")
 
     # Create an Event
     session.add(event)

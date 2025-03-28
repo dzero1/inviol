@@ -17,7 +17,7 @@ def generate_data(count):
             device_id=fake.uuid4(),
             timestamp=datetime.datetime.now(),
             description=random.choice(["temperature reading", "startup", "shutdown", "error log"]),
-            meta=json.dumps(fake.json()),
+            meta = json.dumps(fake.json()),
         )
 
         fake_events.append(fake_event)
