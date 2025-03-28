@@ -16,9 +16,10 @@ router = APIRouter()
 @router.post("/events/", tags=["Event"])
 def create_event(event: Event, session: SessionDep) -> Event:
 
+    print(event.meta)
     try:
-        json.loads(event.meta)
-    except ValueError:
+        json.loads(event.meta if isinstance(event.meta, str) else json.dumps(event.meta))
+    except json.JSONDecodeError:
         raise HTTPException(400, "Invalid meta data format")
 
     try:
